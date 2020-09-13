@@ -1,0 +1,34 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "incremental": true,
+    "module": "CommonJS",
+    "target": "ES2019",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "error",
+    /* more strict checking for errors that per-file transpilers like `esbuild` would crash */
+    "isolatedModules": false,
+    /* Additional Options */
+    // "strict": true,
+    "noEmit": false,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+    "outDir": "out",
+    // "sourceMap": true,
+    // You can't currently define paths in your 'extends' config,
+    // so we have to set 'baseUrl' & 'paths' here.
+    // Don't change these unless you know what you're doing.
+    // See: https://github.com/microsoft/TypeScript/issues/25430
+    "baseUrl": ".",
+    "types": [ "node" ],
+  },
+  "include": [
+    "./",
+    "../src/**/*.spec.ts"
+  ],
+  "exclude": ["../node_modules"],
+  
+}
