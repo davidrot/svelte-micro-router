@@ -18,6 +18,10 @@ export class Router {
     }
   }
 
+  refreshCurrentRoute(): void {
+    this.currentRoute = this.getRouteByPath(location.hash);
+  }
+
   registerSlot(slotObj: any): void {
     this.slots.push(slotObj as IRouterSlot);
     let route = this.currentRoute || this.getCurrentRoute();

@@ -4,6 +4,7 @@
 
     onMount(() => {
         RouterInstance.registerSlot(eval("$$self"));
+        RouterInstance.refreshCurrentRoute();
     });
     onDestroy(() => {
         RouterInstance.unregisterSlot(eval("$$self"));
