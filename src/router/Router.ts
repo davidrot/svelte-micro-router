@@ -18,8 +18,23 @@ export class Router {
     }
   }
 
-  refreshCurrentRoute(): void {
-    this.currentRoute = this.getRouteByPath(location.hash);
+  registerRoutes(routes: Route[]): void {
+    this.routes.push(...routes);
+    
+    // no possible in constructor, because user hasnt registered any routes to it
+    // this is the first possible event to do this
+    if (this.currentRoute == null) {
+      this.currentRoute = this.getRouteByPath(location.hash);
+    }
+  }
+  
+  unregisterRoutes(removeRoutes: Route[]): void {
+    removeRoutes.forEach(item => {
+      const index = this.routes.indexOf(item, 0);
+      if (index > -1) {
+        this.routes.splice(index, 1);
+      }
+    });
   }
 
   registerSlot(slotObj: any): void {
@@ -33,7 +48,7 @@ export class Router {
   }
 
   navigate(url: string, pushState: boolean = true): void {
-    this.currentRoute = this.getRouteByPath(url);
+    this.currentRoute = this.getCurrentRoute();
     this.informSlots(this.currentRoute);
     if (pushState) {
       this.pushState(url);
