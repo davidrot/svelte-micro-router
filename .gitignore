@@ -1,5 +1,6 @@
 /node_modules/
 /public/build/
+/public/npm/
 /test/out/
 
 .DS_Store
