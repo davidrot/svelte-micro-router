@@ -48,7 +48,7 @@ export class Router {
   }
 
   navigate(url: string, pushState: boolean = true): void {
-    this.currentRoute = this.getCurrentRoute();
+    this.currentRoute = this.getRouteByPath(url);
     this.informSlots(this.currentRoute);
     if (pushState) {
       this.pushState(url);
