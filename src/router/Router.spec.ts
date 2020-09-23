@@ -2,18 +2,23 @@ import { test, equal} from 'zora';
 import { Route, Router } from './Router';
 
 function getRoute(url: string, component: any = null): Route {
-    const returnValue = new Route();
-    returnValue.path = url;
-    returnValue.component = component;
+    const returnValue = new Route(url, component);
     return returnValue;
 }
+
+test('Route pathArray splitted', () => {
+    const route = new Route('/user/:id', 1);
+
+    equal(route.component, 1);
+    equal(route.paramNames, [ "id" ]);
+});
 
 test('getParams no used returns null', () => {
     const router = new Router();
 
-    var result = router.getParams('/user', getRoute('/user/'));
+    var result = router.getParams('/user', getRoute('/user'));
 
-    equal(result, null);
+    equal(result, undefined);
 });
 
 test('getParams multiple props returns param', () => {
@@ -27,18 +32,26 @@ test('getParams multiple props returns param', () => {
 test('getParams prop normal returns param', () => {
     const router = new Router();
 
-    var result = router.getParams('/user/1/something', getRoute('/user/:id/'));
+    var result = router.getParams('/user/1/something', getRoute('/user/:id'));
 
     equal(result, { id: "1" });
 });
 
+test('getParams route was configured without multiple parameters ', () => {
+    const router = new Router();
+
+    var result = router.getParams('/asset/1/unkown/test@tescom', getRoute('/asset/:id'));
+
+    equal(result, { id: "1/unkown/test@tescom" });
+})
+
 function getRouterSut(): Router {
     const router = new Router();
     router.registerRoutes([
-        { path: '/user/:id/:name/:email', component: 4 },
-        { path: '/user/1/something', component: 3 },
-        { path: '/invoice/1', component: 2 },
-        { path: '/user', component: 1 }
+        new Route('/user', 1),
+        new Route('/invoice/:id', 2),
+        new Route('/order/:id/something', 3),
+        new Route('/client/:id/:name/:email', 4)
     ]);
     return router;
 }
@@ -58,13 +71,13 @@ test('getRouteByPath one prop return route ', () => {
 test('getRouteByPath one prop follow by no prop return route ', () => {
     const router = getRouterSut();
 
-    equal(router.getRouteByPath('/user/1/something')?.component, 3);
+    equal(router.getRouteByPath('/order/1/something')?.component, 3);
 })
 
 test('getRouteByPath multiple prop followed return route ', () => {
     const router = getRouterSut();
 
-    equal(router.getRouteByPath('/user/1/unkown/test@tescom')?.component, 4);
+    equal(router.getRouteByPath('/client/1/unkown/test@tescom')?.component, 4);
 })
 
 

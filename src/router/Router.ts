@@ -1,6 +1,21 @@
 export class Route {
-  path: string;
-  component: any;
+  component: any
+  paramNames: RegExpMatchArray;
+  pathRegex: RegExp;
+
+  constructor(path: any, component: any)
+  {
+    if (typeof path === 'string' || path instanceof String) {
+      this.paramNames = path.match(/:([^\s/]+)/g)?.map(x => x.substring(1));
+      this.pathRegex = new RegExp(path.replace(/:([^\s/]+)/g, '(.+)'));
+    } else if (path instanceof RegExp) {
+      this.pathRegex = path;
+    } else {
+      throw `path type '${typeof path}' is not supported `;
+    }
+
+    this.component = component;
+  }
 }
 
 interface IRouterSlot {
@@ -77,8 +92,8 @@ export class Router {
 
   getRouteByPath(path: string): Route {
     var routes = this.routes.filter(r => {
-      var valueRegex = r.path.replace(/:([^\s/]+)/g, '(.+)');
-      let result = path.match(new RegExp(valueRegex, "gm"));
+      // let result = path.test(new RegExp(routeRegex, "gm"));
+      let result = new RegExp(r.pathRegex).test(path)
       return result;
     });
 
@@ -94,14 +109,13 @@ export class Router {
   }
 
   getParams(url: string, route: Route): any {
-    var paramNames = route.path.match(/:([^\s/]+)/g);
-    var valueRegex = route.path.replace(/:([^\s/]+)/g, '(.+)');
-    var valueMatches = url.match(valueRegex);
-    
+    if (!route.paramNames) return;
+
+    var valueMatches = url.match(route.pathRegex);
     if (valueMatches && valueMatches.length > 1) {
       var returnValue = {};
       for (let i = 1; i < valueMatches.length; i++) {
-        const name = paramNames[i - 1].substr(1);
+        const name = route.paramNames[i - 1];
         const value = valueMatches[i];
         returnValue[name] = value
       }
