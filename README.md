@@ -1,3 +1,25 @@
+Svelte-micro-router is what the name is already saying. It is very micro, please keep this in your mind if you are missing some features. 
+
+# Usage
+
+Routes should have a slash at the end. Without a slash you get a different behavior. Example 
+
+``` javascript
+var href = '/user/1/something';
+
+// without trailing slash
+var route = { path: '/user/:id' };
+GetParams(route, href) // {id: '1/something' };
+
+// with trailing slash
+route = { path: '/user/:id/' };
+GetParams(route, href) // {id: '1' };
+```
+
+
+
+
+
 *Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*
 
 ---

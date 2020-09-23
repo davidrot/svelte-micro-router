@@ -7,11 +7,11 @@ export class Route {
   {
     if (typeof path === 'string' || path instanceof String) {
       this.paramNames = path.match(/:([^\s/]+)/g)?.map(x => x.substring(1));
-      this.pathRegex = new RegExp(path.replace(/:([^\s/]+)/g, '(.+)'));
+      this.pathRegex = new RegExp(path.replace(/:([^\s/]+)/g, '(.+?)'));
     } else if (path instanceof RegExp) {
       this.pathRegex = path;
     } else {
-      throw `path type '${typeof path}' is not supported `;
+      throw `path type '${typeof path}' is not supported`;
     }
 
     this.component = component;
@@ -109,6 +109,13 @@ export class Router {
   }
 
   getParams(url: string, route: Route): any {
+    var obj1 = this.getParamsFromRouteSection(url, route);
+    var obj2 = this.getParamsFromUrlEncoding(url, route);
+    if (!obj1 && !obj2) return;
+    return {...obj1, ...obj2};
+  }
+
+  getParamsFromRouteSection(url: string, route: Route): any {
     if (!route.paramNames) return;
 
     var valueMatches = url.match(route.pathRegex);
@@ -123,6 +130,20 @@ export class Router {
     }
 
     return null;
+  }
+
+  getParamsFromUrlEncoding(url: string, route: Route): any {
+    var parts = url.split("?").slice(1);
+    var obj;
+    if (parts.length > 0) {
+      obj = {};
+      parts.map(x => x.split("&").filter(x => !!x)).forEach(part => {
+        part.map(x => x.split("=")).forEach(item => {
+          obj[item[0]] = item[1];
+        });
+      });
+    }
+    return obj;
   }
 }
 
