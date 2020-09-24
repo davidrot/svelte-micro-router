@@ -1,13 +1,16 @@
 export class Route {
   component: any
   paramNames: RegExpMatchArray;
+  paramValuesRegex: RegExp;
   pathRegex: RegExp;
 
   constructor(path: any, component: any)
   {
     if (typeof path === 'string' || path instanceof String) {
       this.paramNames = path.match(/:([^\s/]+)/g)?.map(x => x.substring(1));
-      this.pathRegex = new RegExp(path.replace(/:([^\s/]+)/g, '(.+?)'));
+      const regex = path.replace(/:([^\s/]+)/g, '(.+?)');
+      this.paramValuesRegex = new RegExp(`${regex}`); 
+      this.pathRegex = new RegExp(`^${regex}$`);
     } else if (path instanceof RegExp) {
       this.pathRegex = path;
     } else {
@@ -39,7 +42,7 @@ export class Router {
     // no possible in constructor, because user hasnt registered any routes to it
     // this is the first possible event to do this
     if (this.currentRoute == null) {
-      this.currentRoute = this.getRouteByPath(location.hash);
+      this.currentRoute = this.getRouteByPath(this.getCurrentUrl());
     }
   }
   
@@ -91,6 +94,7 @@ export class Router {
   }
 
   getRouteByPath(path: string): Route {
+    if (!path.endsWith('/')) path += '/';
     var routes = this.routes.filter(r => {
       // let result = path.test(new RegExp(routeRegex, "gm"));
       let result = new RegExp(r.pathRegex).test(path)
@@ -118,7 +122,7 @@ export class Router {
   getParamsFromRouteSection(url: string, route: Route): any {
     if (!route.paramNames) return;
 
-    var valueMatches = url.match(route.pathRegex);
+    var valueMatches = url.match(route.paramValuesRegex);
     if (valueMatches && valueMatches.length > 1) {
       var returnValue = {};
       for (let i = 1; i < valueMatches.length; i++) {

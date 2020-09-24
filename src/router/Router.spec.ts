@@ -50,15 +50,15 @@ test('getParams', g => {
         });
     });
 
-    g.test('getParamsFromUrlEncoding one url params ', gg => {
+    g.test('getParamsFromUrlEncoding', gg => {
         const sut = new Router().getParamsFromUrlEncoding;
 
-        gg.test('getParamsFromUrlEncoding one url params ', t => {
+        gg.test('getParamsFromUrlEncoding one url params', t => {
             var result = sut('/asset?id=1', null);
             t.equal(result, { id: "1" });
         });
 
-        gg.test('getParamsFromUrlEncoding multiple url params ', t => {
+        gg.test('getParamsFromUrlEncoding multiple url params', t => {
             var result = sut('/asset?id=1&image=awesome.jpg', null);
             t.equal(result, { id: "1", image: "awesome.jpg" });
         });
