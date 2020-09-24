@@ -9,15 +9,27 @@
         RouterInstance.unregisterSlot(eval("$$self"));
 	});
 
-    let slotContent: Route;
+    // Workaround when two following routes are using the same component.
+    let slotContent1: Route;
+    let slotContent2: Route;
     export function updateSlot(route: Route): void {
-        slotContent = route;
+        if (slotContent1 == null) {
+            slotContent1 = route;
+            slotContent2 = null;
+        } else {
+            slotContent2 = route;
+            slotContent1 = null;
+        }
     }
 </script>
 
 <div>
-    {#if slotContent != null}
-    <svelte:component this={slotContent.component}/>
+    {#if slotContent1 != null}
+    <svelte:component this={slotContent1.component}/>
+    {/if}
+
+    {#if slotContent2 != null}
+    <svelte:component this={slotContent2.component}/>
     {/if}
 </div>
 
