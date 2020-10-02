@@ -9,8 +9,8 @@ export class Route {
     if (typeof path === 'string' || path instanceof String) {
       this.paramNames = path.match(/:([^\s/]+)/g)?.map(x => x.substring(1));
       const regex = path.replace(/:([^\s/]+)/g, '(.+?)');
-      this.paramValuesRegex = new RegExp(`${regex}`); 
-      this.pathRegex = new RegExp(`^${regex}$`);
+      this.paramValuesRegex = new RegExp(`${regex}`, "i"); //i => ignore case
+      this.pathRegex = new RegExp(`^${regex}$`, "i"); //i => ignore case
     } else if (path instanceof RegExp) {
       this.pathRegex = path;
     } else {
@@ -96,8 +96,7 @@ export class Router {
   getRouteByPath(path: string): Route {
     if (!path.endsWith('/')) path += '/';
     var routes = this.routes.filter(r => {
-      // let result = path.test(new RegExp(routeRegex, "gm"));
-      let result = new RegExp(r.pathRegex).test(path)
+      let result = r.pathRegex.test(path)
       return result;
     });
 
