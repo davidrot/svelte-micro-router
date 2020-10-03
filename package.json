@@ -1,7 +1,7 @@
 {
   "name": "svelte-micro-router",
-  "version": "1.0.1",
-  "description": "*Looking for a shareable component template? Go here --> [sveltejs/component-template](https://github.com/sveltejs/component-template)*",
+  "version": "1.0.2",
+  "description": "Svelte-micro-router does what it says on the tin. It is very micro, please keep this in your mind if you are missing some features.",
   "main": "public/npm/bundle.js",
   "svelte": "public/npm/index.js",
   "types": "public/npm/Router.d.ts",
