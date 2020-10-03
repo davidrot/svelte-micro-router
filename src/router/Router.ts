@@ -3,7 +3,7 @@ export class Route {
   component: any;
 }
 
-export interface IRouterSlot {
+interface IRouterSlot {
   updateSlot(route: Route): void;
 }
 

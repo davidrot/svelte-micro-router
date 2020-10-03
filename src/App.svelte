@@ -1,9 +1,6 @@
 <script lang="ts">
 	import RouterSlot from './router/RouterSlot.svelte';
 	import RouterLink from './router/RouterLink.svelte';
-
-	import "./router/Router.spec";
-
 </script>
 
 <main>

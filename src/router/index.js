@@ -1,10 +1,11 @@
-import * as Router from './Router';
-export default Router
-export { default as RouterSlot } from './RouterSlot.svelte'
-export { default as RouterLink } from './RouterLink.svelte'
+import { Router, Route, RouterInstance } from './Router';
+import RouterLink from './RouterLink.svelte';
+import RouterSlot from './RouterSlot.svelte';
 
-// export default {
-//     Rooter: Router,
-//     RouterSlot,
-//     RouterLink
-// } 
+export {
+    Router,
+    Route,
+    RouterInstance,
+    RouterSlot,
+    RouterLink
+}

@@ -2,10 +2,11 @@ import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
+import { terser as minimize } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import typescript2 from 'rollup-plugin-typescript2';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import copy from 'rollup-plugin-copy'
 
 const production = !process.env.ROLLUP_WATCH;
@@ -30,17 +31,17 @@ function serve() {
 		}
 	};
 }
-
-export default [
+let options = [
 	production && {
-		// Configuration for combined js file
+		// Combined js file
 		input: 'src/router/index.js',
 		output: [
 			{
 				sourcemap: false,
-				format: 'iife',
+				format: 'es',
 				name: 'app',
-				file: 'public/npm/bundle.js'
+				file: 'public/npm/bundle.js',
+				indent: false
 			}
 		],
 		plugins: [
@@ -50,37 +51,26 @@ export default [
 				preprocess: sveltePreprocess({
 					sourceMap: !production,
 					defaults: {
-				        // markup: 'pug',
 				        script: 'typescript',
-				        // style: 'scss'
 					},
 				}),
 			}),
-
-			// If you have external dependencies installed from
-			// npm, you'll most likely need these plugins. In
-			// some cases you'll need additional configuration -
-			// consult the documentation for details:
-			// https://github.com/rollup/plugins/tree/master/packages/commonjs
-			// resolve({
-			// 	browser: true,
-			// 	dedupe: ['svelte']
-			// }),
+			nodeResolve(),
 			commonjs(),
 			typescript({
 				sourceMap: !production,
 				inlineSources: !production
 			}),
-			terser()
+			// minimize(),
 		],
 	},
 	production && {
-		// Npm package with svelte components
+		// To use with svelte components
 		input: 'src/router/Router.ts',
 		output: [
 			{
 				sourcemap: false,
-				format: 'iife',
+				format: 'es',
 				name: 'app',
 				file: 'public/npm/router.js'
 			}
@@ -92,26 +82,15 @@ export default [
 				preprocess: sveltePreprocess({
 					sourceMap: !production,
 					defaults: {
-				        // markup: 'pug',
 				        script: 'typescript',
-				        // style: 'scss'
 					},
 				}),
 			}),
-
-			// If you have external dependencies installed from
-			// npm, you'll most likely need these plugins. In
-			// some cases you'll need additional configuration -
-			// consult the documentation for details:
-			// https://github.com/rollup/plugins/tree/master/packages/commonjs
-			resolve({
-				browser: true,
-				dedupe: ['svelte']
-			}),
+			nodeResolve(),
 			commonjs(),
 			typescript2({
 				tsconfigOverride: {
-					include: ["src/router/router.ts"],
+					include: ["src/router/Router.ts"],
 					compilerOptions: {
 						declaration: true,
 						// declarationDir: "public/npm/types"
@@ -119,12 +98,11 @@ export default [
 				},
 				clean: true
 			}),
-			// If we're building for production (npm run build
-			// instead of npm run dev), minify
-			production && terser(),
+			// minimize(),
 			copy({
 				targets: [
-					{ src: 'src/router/sveltecomponents.js', dest: 'public/npm' },
+					{ src: 'src/router/index.js', dest: 'public/npm' },
+					{ src: 'src/router/Router.ts', dest: 'public/npm' },
 					{ src: 'src/router/RouterLink.svelte', dest: 'public/npm' },
 					{ src: 'src/router/RouterSlot.svelte', dest: 'public/npm' }
 				]
@@ -143,15 +121,10 @@ export default [
 		],
 		plugins: [
 			svelte({
-				// enable run-time checks when not in production
-				dev: !production,
-				// we'll extract any component CSS out into
-				// a separate file - better for performance
-				css: css => {
-					css.write('bundle.css');
-				},
+				dev: true,
+				css: false,
 				preprocess: sveltePreprocess({
-					sourceMap: !production,
+					sourceMap: false,
 					defaults: {
 				        // markup: 'pug',
 				        script: 'typescript',
@@ -159,11 +132,7 @@ export default [
 					},
 				}),
 			}),
-
-			// If you have external dependencies installed from
-			// npm, you'll most likely need these plugins. In
-			// some cases you'll need additional configuration -
-			// consult the documentation for details:
+			nodeResolve(),
 			// https://github.com/rollup/plugins/tree/master/packages/commonjs
 			resolve({
 				browser: true,
@@ -171,21 +140,11 @@ export default [
 			}),
 			commonjs(),
 			typescript({
-				sourceMap: !production,
-				inlineSources: !production
+				sourceMap: false,
+				inlineSources: false
 			}),
-
-			// In dev mode, call `npm run start` once
-			// the bundle has been generated
 			!production && serve(),
-
-			// Watch the `public` directory and refresh the
-			// browser on changes when not in production
 			!production && livereload('public'),
-
-			// If we're building for production (npm run build
-			// instead of npm run dev), minify
-			production && terser()
 		],
 		watch: {
 			clearScreen: false,
@@ -194,4 +153,5 @@ export default [
 			}
 		}
 	}
-];
+].filter(x => x != false);
+export default options;
