@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Route, RouterInstance} from './Router';
+    import { RouterInstance, Route } from './Router';
     import { onMount, onDestroy } from 'svelte';
 
     onMount(() => {

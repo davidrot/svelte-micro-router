@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Route, RouterInstance} from './Router';
+    import { RouterInstance} from './Router';
 
-    export let to;
+    export let to: any;
 
     export function navigate(): void {
         RouterInstance.navigate(to);

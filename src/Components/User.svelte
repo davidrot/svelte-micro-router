@@ -1,12 +1,11 @@
 <script lang="ts">
 import { RouterInstance } from '../router/Router'
 import { onMount } from 'svelte';
-import { onDestroy } from 'svelte';
 
-let params;
+let params: any;
 
 onMount(() => {
-    params = RouterInstance.getParamsObj();
+    params = RouterInstance.getCurrentParamsObj();
 });
 
 </script>

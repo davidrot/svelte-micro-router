@@ -1,7 +1,7 @@
-import { RouterInstance, Route} from './router/Router'
-import HomeComponent from "./Components/Home.svelte";
-import AboutComponent from "./Components/About.svelte";
-import UserComponent from "./Components/User.svelte";
+import AboutComponent from './Components/About.svelte';
+import HomeComponent from './Components/Home.svelte';
+import UserComponent from './Components/User.svelte';
+import { RouterInstance, Route } from './router/Router';
 
 RouterInstance.registerRoutes([
     new Route ('/', HomeComponent),

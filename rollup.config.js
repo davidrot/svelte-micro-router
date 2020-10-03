@@ -61,7 +61,7 @@ let options = [
 				sourceMap: !production,
 				inlineSources: !production
 			}),
-			// minimize(),
+			minimize(),
 		],
 	},
 	production && {
@@ -104,7 +104,8 @@ let options = [
 					{ src: 'src/router/index.js', dest: 'public/npm' },
 					{ src: 'src/router/Router.ts', dest: 'public/npm' },
 					{ src: 'src/router/RouterLink.svelte', dest: 'public/npm' },
-					{ src: 'src/router/RouterSlot.svelte', dest: 'public/npm' }
+					{ src: 'src/router/RouterSlot.svelte', dest: 'public/npm' },
+					{ src: 'package.json', dest: 'public/npm' }
 				]
 			})
 		],

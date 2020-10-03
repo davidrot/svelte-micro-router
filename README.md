@@ -1,4 +1,4 @@
-Svelte-micro-router is what the name is already saying. It is very micro, please keep this in your mind if you are missing some features. 
+Svelte-micro-router does what it says on the tin. It is very micro, please keep this in your mind if you are missing some features. 
 
 # Features
 
@@ -17,7 +17,7 @@ npm install svelte-micro-router --save
 
 # Code Sample
 
-This router is composed out of three parts (RouterInstance, RouterSlot, RouterLink). The RouterInstance what is having the main logic (route matching, read parameters from url). RouterSlot is to show the component of the current route. 
+This router is composed out of three parts (RouterInstance, RouterSlot, RouterLink). The RouterInstance what has the main logic (route matching, reading parameters from url). RouterSlot is to show the component of the current route. 
 
 ```typescript
 // router-config.ts
@@ -57,16 +57,19 @@ RouterInstance.registerRoutes([
 Routes should have a slash at the end. Without a slash you get a different behavior. Example 
 
 ``` javascript
-var href = '/user/1/something/';
+const href = '/user/1/something/';
 
 // without trailing slash
-var route = { path: '/user/:id' };
-GetParams(route, href) // {id: '1/something' };
+let route = { path: '/user/:id' };
+router.getParams(route, href) // {id: '1/something' };
 
 // with trailing slash
 route = { path: '/user/:id/' };
-GetParams(route, href) // {id: '1' };
+router.getParams(route, href) // {id: '1' };
 ```
+
+This router instantiates the route’s component on every route change. Even when routing to a route with the same component as the previous route.
+
 
 # Contribute
 

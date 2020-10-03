@@ -1,5 +1,5 @@
 import { test, equal} from 'zora';
-import { Route, Router } from './Router';
+import { Router, Route } from './Router';
 
 function getRoute(url: string, component: any = null): Route {
     const returnValue = new Route(url, component);
@@ -7,22 +7,22 @@ function getRoute(url: string, component: any = null): Route {
 }
 
 test('Route', g => {
-    g.test('Route as string', t => {
+    g.test('should handle path as string', t => {
         const route = new Route('/user/:id/', 1);
 
         t.equal(route.component, 1);
-        t.equal(route.paramNames, ["id"]);
+        t.equal(route.paramNames, ['id']);
     });
 
-    g.test('Route as regex', t => {
+    g.test('should handle path as regex', t => {
         const regex = new RegExp('\/user\/.+?\/');
         const route = new Route(regex, 1);
 
         t.equal(route.pathRegex, regex);
     })
 
-    g.test('Route unkown type throws exception', t => {
-        t.throws(() => new Route(1, {}), "path type '${ typeof path }' is not supported");
+    g.test('should throw an exception if type cant handled', t => {
+        t.throws(() => new Route(1 as any, {}), 'path type \'${ typeof path }\' is not supported');
     })
 });
 
@@ -31,56 +31,56 @@ test('getParams', g => {
     g.test('getParamsFromRouteSection', gg => {
         const sut = new Router();
 
-        gg.test('getParams no params returns null', t => {
-            var result = sut.getParams('/user', getRoute('/user/'));
+        gg.test('should return nothing if no params exists', t => {
+            const result = sut.getCurrentParams('/user', getRoute('/user/'));
 
             t.equal(result, undefined);
         });
 
-        gg.test('getParams one param returns one', t => {
-            var result = sut.getParams('/user/1/something/', getRoute('/user/:id/'));
+        gg.test('should return one param if one param exists', t => {
+            const result = sut.getCurrentParams('/user/1/something/', getRoute('/user/:id/'));
 
-            t.equal(result, { id: "1" });
+            t.equal(result, { id: '1' });
         });
 
-        gg.test('getParams multiple params followed returns multiple', t => {
-            var result = sut.getParams('/user/1/unkown/test@tescom/', getRoute('/user/:id/:name/:email/'));
+        gg.test('should return multiple params if multiple params exists', t => {
+            const result = sut.getCurrentParams('/user/1/unkown/test@tescom/', getRoute('/user/:id/:name/:email/'));
 
-            t.equal(result, { id: "1", name: "unkown", email: "test@tescom" });
+            t.equal(result, { id: '1', name: 'unkown', email: 'test@tescom' });
         });
     });
 
     g.test('getParamsFromUrlEncoding', gg => {
         const sut = new Router().getParamsFromUrlEncoding;
 
-        gg.test('getParamsFromUrlEncoding one url params', t => {
-            var result = sut('/asset?id=1', null);
-            t.equal(result, { id: "1" });
+        gg.test('should return one url param', t => {
+            const result = sut('/asset?id=1', null);
+            t.equal(result, { id: '1' });
         });
 
-        gg.test('getParamsFromUrlEncoding multiple url params', t => {
-            var result = sut('/asset?id=1&image=awesome.jpg', null);
-            t.equal(result, { id: "1", image: "awesome.jpg" });
+        gg.test('should return multiple url params', t => {
+            const result = sut('/asset?id=1&image=awesome.jpg', null);
+            t.equal(result, { id: '1', image: 'awesome.jpg' });
         });
 
-        gg.test('getParamsFromUrlEncoding empty value in url params', t => {
-            var result = sut('/asset?id=&image=awesome.jpg', null);
-            t.equal(result, { id: "", image: "awesome.jpg" });
+        gg.test('should handle empty value in url params', t => {
+            const result = sut('/asset?id=&image=awesome.jpg', null);
+            t.equal(result, { id: '', image: 'awesome.jpg' });
         });
 
-        gg.test('getParamsFromUrlEncoding empty key in url params', t => {
-            var result = sut('/asset?=1&image=awesome.jpg', null);
-            t.equal(result, { "" : "1", image: "awesome.jpg" });
+        gg.test('should handle empty key in url params', t => {
+            const result = sut('/asset?=1&image=awesome.jpg', null);
+            t.equal(result, { '' : '1', image: 'awesome.jpg' });
         });
 
-        gg.test('getParamsFromUrlEncoding empty key and value in url params', t => {
-            var result = sut('/asset?=&image=awesome.jpg', null);
-            t.equal(result, { "" : "", image: "awesome.jpg" });
+        gg.test('should handle empty key and value in url params', t => {
+            const result = sut('/asset?=&image=awesome.jpg', null);
+            t.equal(result, { '' : '', image: 'awesome.jpg' });
         });
 
-        gg.test('getParamsFromUrlEncoding complete empty in url params', t => {
-            var result = sut('/asset?&image=awesome.jpg', null);
-            t.equal(result, { image: "awesome.jpg" });
+        gg.test('should handle complete empty in url params', t => {
+            const result = sut('/asset?&image=awesome.jpg', null);
+            t.equal(result, { image: 'awesome.jpg' });
         });
     });
 });
@@ -98,25 +98,25 @@ test('getRouteByPath', g => {
         return router;
     }
 
-    g.test('getRouteByPath no props return route', t => {
+    g.test('should match route without parmas', t => {
         const router = getRouterSut();
 
         t.equal(router.getRouteByPath('/user/')?.component, 1);
     });
 
-    g.test('getRouteByPath one prop return route', t => {
+    g.test('should match route with one param', t => {
         const router = getRouterSut();
 
         t.equal(router.getRouteByPath('/invoice/1/')?.component, 2);
     });
 
-    g.test('getRouteByPath one prop follow by no prop return route', t => {
+    g.test('should match route with one param follow by no param', t => {
         const router = getRouterSut();
 
         t.equal(router.getRouteByPath('/order/1/something/')?.component, 3);
     });
 
-    g.test('getRouteByPath multiple prop followed return route', t => {
+    g.test('should match route with multiple params followed', t => {
         const router = getRouterSut();
 
         t.equal(router.getRouteByPath('/client/1/unkown/test@tescom/')?.component, 4);
@@ -124,7 +124,7 @@ test('getRouteByPath', g => {
 });
 
 test('registerRoutes', g => {
-    g.test('registerRoutes add routes', t => {
+    g.test('should add routes to list', t => {
         const router = new Router();
 
         router.registerRoutes([new Route('/user/', 101)]);
@@ -133,7 +133,7 @@ test('registerRoutes', g => {
         t.equal(router.routes[0]?.component, 101);
     });
 
-    g.test('registerRoutes add routes to existing list', t => {
+    g.test('should append routes to list', t => {
         const router = new Router();
 
         router.registerRoutes([new Route('/user/', 101)]);
@@ -144,16 +144,18 @@ test('registerRoutes', g => {
         t.equal(router.routes[1]?.component, 102);
     });
 
-    g.test('registerRoutes is setting currentRoute', t => {
+    g.test('should set currentRoute property', t => {
         const router = new Router();
-        location.hash = "/user/1/";
+        location.hash = '/user/1/';
 
         router.registerRoutes([new Route('/user/:id/', 102)]);
 
         t.equal(router.currentRoute?.component, 102);
     });
+});
 
-    g.test('unregisterRoutes remove from list', t => {
+test('unregisterRoutes', g => {
+    g.test('should remove routes from list', t => {
         const router = new Router();
         const route = new Route('/', 101);
         router.registerRoutes([route]);
@@ -164,7 +166,7 @@ test('registerRoutes', g => {
         t.equal(router.routes.length, 0);
     });
 
-    g.test('unregisterRoutes not existing in list', t => {
+    g.test('should not crash if route is not found in list', t => {
         const router = new Router();
         router.registerRoutes([new Route('/', 101)]);
         t.equal(router.routes.length, 1);
