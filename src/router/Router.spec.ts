@@ -1,7 +1,7 @@
-import { test, equal} from 'zora';
+import { test } from 'zora';
 import { Router, Route } from './Router';
 
-function getRoute(url: string, component: any = null): Route {
+const getRoute = (url: string, component: any = null) => {
     const returnValue = new Route(url, component);
     return returnValue;
 }
@@ -38,15 +38,15 @@ test('getParams', g => {
         });
 
         gg.test('should return object if route params exists', t => {
-            const result = sut.getCurrentParams('/user/1/', getRoute('/user/:id/'));;
+            const result = sut.getCurrentParams('/user/1/', getRoute('/user/:id/'));
 
-            t.equal(result, { id: "1" });
+            t.equal(result, { id: '1' });
         });
 
         gg.test('should return obj if url params exists', t => {
             const result = sut.getCurrentParams('/asset?id=1', null);
 
-            t.equal(result, { id: "1" });
+            t.equal(result, { id: '1' });
         });
     });
 
@@ -70,39 +70,39 @@ test('getParams', g => {
         const sut = new Router();
 
         gg.test('should return one url param', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?id=1', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?id=1');
             t.equal(result, { id: '1' });
         });
 
         gg.test('should return multiple url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?id=1&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?id=1&image=awesome.jpg');
             t.equal(result, { id: '1', image: 'awesome.jpg' });
         });
 
         gg.test('should handle empty value in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?id=&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?id=&image=awesome.jpg');
             t.equal(result, { id: '', image: 'awesome.jpg' });
         });
 
         gg.test('should handle empty key in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?=1&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?=1&image=awesome.jpg');
             t.equal(result, { '' : '1', image: 'awesome.jpg' });
         });
 
         gg.test('should handle empty key and value in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?=&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?=&image=awesome.jpg');
             t.equal(result, { '' : '', image: 'awesome.jpg' });
         });
 
         gg.test('should handle complete empty in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?&image=awesome.jpg');
             t.equal(result, { image: 'awesome.jpg' });
         });
     });
 });
 
 test('getRouteByPath', g => {
-    function getRouterSut(): Router {
+    const getRouterSut = () => {
         const router = new Router();
         router.registerRoutes([
             new Route('/user/', 1),

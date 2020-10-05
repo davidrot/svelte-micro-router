@@ -7,7 +7,7 @@ export class Route {
   public paramNames: RegExpMatchArray;
   public paramValuesRegex: RegExp;
   public pathRegex: RegExp;
-  
+
   /**
    * @param  {string|RegExp} path
    * @param  {any} component
@@ -35,12 +35,13 @@ export class Router {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      window.addEventListener('popstate', event => this.popState(event));
+      window.addEventListener('popstate', () => this.popState());
     }
   }
 
   /**
    * Register routes to the router.
+   *
    * @param  {Route[]} routes
    * @returns void
    */
@@ -56,6 +57,7 @@ export class Router {
 
   /**
    * Unregister routes to the router.
+   *
    * @param  {Route[]} removeRoutes
    * @returns void
    */
@@ -69,6 +71,7 @@ export class Router {
   }
   /**
    * Internal: RouterSlot needs to inform the router that he will be informed about any route changes.
+   *
    * @param  {any} slotObj
    * @returns void
    */
@@ -77,9 +80,10 @@ export class Router {
     const route = this.currentRoute || this.getCurrentRoute();
     slotObj.updateSlot(route);
   }
-  
+
   /**
    * Internal: RouterSlots needs to unregister from the router that he will not informed about any route changes.
+   *
    * @param  {any} slotObj
    * @returns void
    */
@@ -89,6 +93,7 @@ export class Router {
 
   /**
    * To navigate to some other page.
+   *
    * @param  {string} url
    * @param  {boolean=true} pushState
    * @returns void
@@ -101,7 +106,7 @@ export class Router {
     }
   }
 
-  private popState(event: any) {
+  private popState() {
     this.navigate(this.getCurrentUrl(), false);
   }
 
@@ -120,9 +125,10 @@ export class Router {
   private getCurrentRoute(): Route {
     return this.getRouteByPath(this.getCurrentUrl());
   }
-  
+
   /**
    * Internal: Returns the route object what is matching the the path-param.
+   *
    * @param  {string} path
    * @returns Route
    */
@@ -138,6 +144,7 @@ export class Router {
 
   /**
    * Returns an object with the params from the current route and current url.
+   *
    * @returns Record
    */
   public getCurrentParamsObj(): Record<string, string> {
@@ -146,19 +153,21 @@ export class Router {
 
   /**
    * Returns an object with the params from the route and url.
+   *
    * @param  {string} url
    * @param  {Route} route
    * @returns Record
    */
   public getCurrentParams(url: string, route: Route): Record<string, string> {
     const routeParams = this.getParamsFromRouteSection(url, route);
-    const urlParams = this.getParamsFromUrlEncoding(url, route);
+    const urlParams = this.getParamsFromUrlEncoding(url);
     if (!routeParams && !urlParams) return;
     return {...routeParams, ...urlParams};
   }
 
   /**
    * Returns an object with the params from the route.
+   *
    * @param  {string} url
    * @param  {Route} route
    * @returns Record
@@ -182,11 +191,12 @@ export class Router {
 
   /**
    * Returns an object with the params from the url.
+   *
    * @param  {string} url
    * @param  {Route} route
    * @returns Record
    */
-  public getParamsFromUrlEncoding(url: string, route: Route): Record<string, string> {
+  public getParamsFromUrlEncoding(url: string): Record<string, string> {
     const parts = url.split('?').slice(1);
     let obj: Record<string, string>;
     if (parts.length > 0) {
