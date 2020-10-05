@@ -70,6 +70,42 @@ router.getParams(route, href) // {id: '1' };
 
 This router instantiates the route’s component on every route change. Even when routing to a route with the same component as the previous route.
 
+# Methods 
+
+The router is having the following public methods. 
+
+```typescript
+/**
+* Register routes to the router.
+* @param  {Route[]} routes
+* @returns void
+*/
+public registerRoutes(routes: Route[]): void
+
+/**
+* Unregister routes to the router.
+* @param  {Route[]} removeRoutes
+* @returns void
+*/
+public unregisterRoutes(removeRoutes: Route[]): void
+
+/**
+* To navigate to some other page.
+* @param  {string} url
+* @param  {boolean=true} pushState
+* @returns void
+*/
+public navigate(url: string, pushState: boolean = true): void
+
+/**
+* Returns an object with the params from the url.
+* @param  {string} url
+* @param  {Route} route
+* @returns Record
+*/
+public getCurrentParamsObj(): Record<string, string>: Record<string, string>
+```
+
 
 # Contribute
 

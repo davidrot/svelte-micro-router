@@ -28,7 +28,7 @@ test('Route', g => {
 
 test('getParams', g => {
 
-    g.test('getParamsFromRouteSection', gg => {
+    g.test('getCurrentParams', gg => {
         const sut = new Router();
 
         gg.test('should return nothing if no params exists', t => {
@@ -37,49 +37,65 @@ test('getParams', g => {
             t.equal(result, undefined);
         });
 
+        gg.test('should return object if route params exists', t => {
+            const result = sut.getCurrentParams('/user/1/', getRoute('/user/:id/'));;
+
+            t.equal(result, { id: "1" });
+        });
+
+        gg.test('should return obj if url params exists', t => {
+            const result = sut.getCurrentParams('/asset?id=1', null);
+
+            t.equal(result, { id: "1" });
+        });
+    });
+
+    g.test('getParamsFromRouteSection', gg => {
+        const sut = new Router();
+
         gg.test('should return one param if one param exists', t => {
-            const result = sut.getCurrentParams('/user/1/something/', getRoute('/user/:id/'));
+            const result = sut.getParamsFromRouteSection('/user/1/something/', getRoute('/user/:id/'));
 
             t.equal(result, { id: '1' });
         });
 
         gg.test('should return multiple params if multiple params exists', t => {
-            const result = sut.getCurrentParams('/user/1/unkown/test@tescom/', getRoute('/user/:id/:name/:email/'));
+            const result = sut.getParamsFromRouteSection('/user/1/unkown/test@tescom/', getRoute('/user/:id/:name/:email/'));
 
             t.equal(result, { id: '1', name: 'unkown', email: 'test@tescom' });
         });
     });
 
     g.test('getParamsFromUrlEncoding', gg => {
-        const sut = new Router().getParamsFromUrlEncoding;
+        const sut = new Router();
 
         gg.test('should return one url param', t => {
-            const result = sut('/asset?id=1', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?id=1', null);
             t.equal(result, { id: '1' });
         });
 
         gg.test('should return multiple url params', t => {
-            const result = sut('/asset?id=1&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?id=1&image=awesome.jpg', null);
             t.equal(result, { id: '1', image: 'awesome.jpg' });
         });
 
         gg.test('should handle empty value in url params', t => {
-            const result = sut('/asset?id=&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?id=&image=awesome.jpg', null);
             t.equal(result, { id: '', image: 'awesome.jpg' });
         });
 
         gg.test('should handle empty key in url params', t => {
-            const result = sut('/asset?=1&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?=1&image=awesome.jpg', null);
             t.equal(result, { '' : '1', image: 'awesome.jpg' });
         });
 
         gg.test('should handle empty key and value in url params', t => {
-            const result = sut('/asset?=&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?=&image=awesome.jpg', null);
             t.equal(result, { '' : '', image: 'awesome.jpg' });
         });
 
         gg.test('should handle complete empty in url params', t => {
-            const result = sut('/asset?&image=awesome.jpg', null);
+            const result = sut.getParamsFromUrlEncoding('/asset?&image=awesome.jpg', null);
             t.equal(result, { image: 'awesome.jpg' });
         });
     });
