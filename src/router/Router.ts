@@ -170,7 +170,7 @@ export class Router {
    * @returns Record
    */
   public getCurrentParamsObj(): Record<string, string> {
-    return this.getCurrentParams(location.hash, this.currentRoute);
+    return this.getCurrentParams(this.getCurrentUrl(), this.currentRoute);
   }
 
   /**
