@@ -12,7 +12,7 @@ test('Route', g => {
 
         t.equal(route.component, 1);
         t.equal(route.path, '/user/:id/');
-        t.equal(route.params, { a:1 });
+        t.equal(route.metaInformation, { a:1 });
     });
 });
 

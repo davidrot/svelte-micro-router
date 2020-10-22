@@ -5,17 +5,18 @@ export interface IRouterSlot {
 export class Route {
   public component: any;
   public path: string;
-  public params: any;
+  public metaInformation: any;
   private urlParts: string[];
 
   /**
-   * @param  {string|RegExp} path
+   * @param  {string} path
    * @param  {any} component
+   * @param  {any} metaInformation (will be resolved when getParamsObj)
    */
-  constructor(path: string, component: any, params: any = null) {
+  constructor(path: string, component: any, metaInformation: any = null) {
     this.component = component;
     this.path = path;
-    this.params = params;
+    this.metaInformation = metaInformation;
     this.urlParts = this.trimSlashes(path).split('/');
   }
 
@@ -165,7 +166,7 @@ export class Router {
   }
 
   /**
-   * Returns an object with the params from the current route and current url.
+   * Returns an object with the params from the current route and meta information from route.
    *
    * @returns Record
    */
@@ -174,7 +175,7 @@ export class Router {
   }
 
   /**
-   * Returns an object with the params from the route and url.
+   * Returns an object with the params from the route and meta information.
    *
    * @param  {string} url
    * @param  {Route} route
@@ -185,7 +186,7 @@ export class Router {
     if (params && Object.keys(params).length === 0) {
       params = null;
     }
-    const baseParams = route.params as Record<string, string>;
+    const baseParams = route.metaInformation as Record<string, string>;
     if (!params && !baseParams) return;
     return { ...baseParams, ...params };
   }

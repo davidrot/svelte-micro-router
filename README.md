@@ -28,7 +28,7 @@ RouterInstance.registerRoutes([
     new Route ('/', HomeComponent),
     new Route ('/about/', AboutComponent),
     new Route ('/user/:userId/', UserComponent),
-    new Route ('/user/:userId/:name/', UserComponent),
+    new Route ('/user/:userId/:name/', UserComponent, { metaInformation: 'something' }),
 ]);
 ```
 
@@ -82,7 +82,7 @@ public unregisterRoutes(removeRoutes: Route[]): void
 public navigate(url: string, pushState: boolean = true): void
 
 /**
-* Returns an object with the params from the url.
+* Returns an object with the params from the url cobmined with meta information.
 * @param  {string} url
 * @param  {Route} route
 * @returns Record
