@@ -8,22 +8,12 @@ const getRoute = (url: string, component: any = null) => {
 
 test('Route', g => {
     g.test('should handle path as string', t => {
-        const route = new Route('/user/:id/', 1);
+        const route = new Route('/user/:id/', 1, { a: 1 });
 
         t.equal(route.component, 1);
-        t.equal(route.paramNames, ['id']);
+        t.equal(route.path, '/user/:id/');
+        t.equal(route.params, { a:1 });
     });
-
-    g.test('should handle path as regex', t => {
-        const regex = new RegExp('\/user\/.+?\/');
-        const route = new Route(regex, 1);
-
-        t.equal(route.pathRegex, regex);
-    })
-
-    g.test('should throw an exception if type cant handled', t => {
-        t.throws(() => new Route(1 as any, {}), 'path type \'${ typeof path }\' is not supported');
-    })
 });
 
 test('getParams', g => {
@@ -37,66 +27,22 @@ test('getParams', g => {
             t.equal(result, undefined);
         });
 
+        gg.test('should return default param if no params exists', t => {
+            const result = sut.getCurrentParams('/user', new Route('/user/', 1, {edit:true}));
+
+            t.equal(result as any, {edit: true});
+        });
+
         gg.test('should return object if route params exists', t => {
             const result = sut.getCurrentParams('/user/1/', getRoute('/user/:id/'));
 
             t.equal(result, { id: '1' });
         });
 
-        gg.test('should return obj if url params exists', t => {
-            const result = sut.getCurrentParams('/asset?id=1', null);
+        gg.test('should return default object combined with route params', t => {
+            const result = sut.getCurrentParams('/user/1/', new Route('/user/:id/', 1, { edit: true }));
 
-            t.equal(result, { id: '1' });
-        });
-    });
-
-    g.test('getParamsFromRouteSection', gg => {
-        const sut = new Router();
-
-        gg.test('should return one param if one param exists', t => {
-            const result = sut.getParamsFromRouteSection('/user/1/something/', getRoute('/user/:id/'));
-
-            t.equal(result, { id: '1' });
-        });
-
-        gg.test('should return multiple params if multiple params exists', t => {
-            const result = sut.getParamsFromRouteSection('/user/1/unkown/test@tescom/', getRoute('/user/:id/:name/:email/'));
-
-            t.equal(result, { id: '1', name: 'unkown', email: 'test@tescom' });
-        });
-    });
-
-    g.test('getParamsFromUrlEncoding', gg => {
-        const sut = new Router();
-
-        gg.test('should return one url param', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?id=1');
-            t.equal(result, { id: '1' });
-        });
-
-        gg.test('should return multiple url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?id=1&image=awesome.jpg');
-            t.equal(result, { id: '1', image: 'awesome.jpg' });
-        });
-
-        gg.test('should handle empty value in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?id=&image=awesome.jpg');
-            t.equal(result, { id: '', image: 'awesome.jpg' });
-        });
-
-        gg.test('should handle empty key in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?=1&image=awesome.jpg');
-            t.equal(result, { '' : '1', image: 'awesome.jpg' });
-        });
-
-        gg.test('should handle empty key and value in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?=&image=awesome.jpg');
-            t.equal(result, { '' : '', image: 'awesome.jpg' });
-        });
-
-        gg.test('should handle complete empty in url params', t => {
-            const result = sut.getParamsFromUrlEncoding('/asset?&image=awesome.jpg');
-            t.equal(result, { image: 'awesome.jpg' });
+            t.equal(result as any, { id: '1', edit: true });
         });
     });
 });
@@ -114,6 +60,13 @@ test('getRouteByPath', g => {
         return router;
     }
 
+
+    g.test('should match route without trailing slash', t => {
+        const router = getRouterSut();
+
+        t.equal(router.getRouteByPath('/user')?.component, 1);
+    });
+
     g.test('should match route without parmas', t => {
         const router = getRouterSut();
 
@@ -124,6 +77,12 @@ test('getRouteByPath', g => {
         const router = getRouterSut();
 
         t.equal(router.getRouteByPath('/invoice/1/')?.component, 2);
+    });
+
+    g.test('should match route with one param without trailing slash', t => {
+        const router = getRouterSut();
+
+        t.equal(router.getRouteByPath('/invoice/1')?.component, 2);
     });
 
     g.test('should match route with one param follow by no param', t => {

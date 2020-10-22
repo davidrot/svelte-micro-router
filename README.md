@@ -13,8 +13,6 @@ Svelte-micro-router does what it says on the tin. It is very micro, please keep 
 npm install svelte-micro-router --save
 ```
 
-
-
 # Code Sample
 
 This router is composed out of three parts (RouterInstance, RouterSlot, RouterLink). The RouterInstance what has the main logic (route matching, reading parameters from url). RouterSlot is to show the component of the current route. 
@@ -41,32 +39,18 @@ RouterInstance.registerRoutes([
 </script>
 
 <main>
-	<div class="navigation">
+	<nav">
 		<RouterLink to="/">Home</RouterLink>
 		<RouterLink to="/about/">About</RouterLink>
 		<RouterLink to="/user/1/">User 1</RouterLink>
 		<RouterLink to="/user/2/test/">User 2</RouterLink>
-	</div>
+	</nav>
 
 	<RouterSlot></RouterSlot>
 </main>
 ```
 
 # Usage advices
-
-Routes should have a slash at the end. Without a slash you get a different behavior. Example 
-
-``` javascript
-const href = '/user/1/something/';
-
-// without trailing slash
-let route = { path: '/user/:id' };
-router.getParams(route, href) // {id: '1/something' };
-
-// with trailing slash
-route = { path: '/user/:id/' };
-router.getParams(route, href) // {id: '1' };
-```
 
 This router instantiates the route’s component on every route change. Even when routing to a route with the same component as the previous route.
 
@@ -103,7 +87,7 @@ public navigate(url: string, pushState: boolean = true): void
 * @param  {Route} route
 * @returns Record
 */
-public getCurrentParamsObj(): Record<string, string>: Record<string, string>
+public getCurrentParamsObj(): Record<string, string>
 ```
 
 
