@@ -54,12 +54,67 @@ export class Route {
 export class Router {
   public routes: Route[] = [];
   private slots: IRouterSlot[] = [];
+  private events: any = {};
   public currentRoute: Route;
 
   constructor() {
     if (typeof window !== 'undefined') {
       window.addEventListener('popstate', () => this.popState());
     }
+  }
+
+  /**
+   * The method addEventListener() sets up a function that will be
+   * called whenever the specified event is delivered to the target.
+   *
+   * @param  {string} name
+   * @param  {any} handler
+   * @returns void
+   */
+  public addEventListener(name: string, handler: any): void {
+    if (this.events.hasOwnProperty(name)) {
+      this.events[name].push(handler);
+    } else {
+      this.events[name] = [handler];
+    }
+  }
+
+  /**
+   * The EventTarget.removeEventListener() method removes from the
+   * EventTarget an event listener previously registered with
+   * EventTarget.addEventListener().
+   *
+   * @param  {string} name
+   * @param  {any} handler
+   * @returns void
+   */
+  public removeEventListener(name: string, handler: any): void {
+    if (!this.events.hasOwnProperty(name)) {
+      return;
+    }
+
+    const index = this.events[name].indexOf(handler);
+    if (index !== -1) {
+      this.events[name].splice(index, 1);
+    }
+  }
+
+  /**
+   * Internal: Publish the event to the handlers
+   *
+   * @param  {string} name
+   * @param  {any=[]} args
+   */
+  private fireEvent(name: string, args: any = []) {
+    if (!this.events.hasOwnProperty(name)) {
+      return;
+    }
+
+    this.events[name].forEach(event => {
+      // event.apply(args);
+      // event(args)
+      event.apply(this, args);
+    });
   }
 
   /**
@@ -122,10 +177,16 @@ export class Router {
    * @returns void
    */
   public navigate(url: string, pushState: boolean = true): void {
-    this.currentRoute = this.getRouteByPath(url);
-    this.informSlots(this.currentRoute);
-    if (pushState) {
-      this.pushState(url);
+    const destinationRoute = this.getRouteByPath(url);
+    const arg = { cancled: false, source: this.currentRoute, destination: destinationRoute };
+    this.fireEvent('url-changing', [arg])
+
+    if (!arg.cancled) {
+      this.currentRoute = destinationRoute;
+      this.informSlots(this.currentRoute);
+      if (pushState) {
+        this.pushState(url);
+      }
     }
   }
 

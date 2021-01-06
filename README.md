@@ -88,8 +88,38 @@ public navigate(url: string, pushState: boolean = true): void
 * @returns Record
 */
 public getCurrentParamsObj(): Record<string, string>
+  
+/**
+* The method addEventListener() sets up a function that will be called whenever the
+* specified event is delivered to the target.
+* @param  {string} name
+* @param  {any} handler
+* @returns void
+*/
+public addEventListener(name: string, handler: any): void
+
+/**
+* The EventTarget.removeEventListener() method removes from the EventTarget an event
+* listener previously registered with EventTarget.addEventListener().
+* @param  {string} name
+* @param  {any} handler
+* @returns void
+*/
+public removeEventListener(name: string, handler: any): void
 ```
 
+# Events
+
+```typescript
+/**
+* Will be called before the url is changed. Change will be cancled if the argument property cancled is set to true.
+*/
+RouterInstance.addEventListener('url-changing', arg => {
+  if (auth.invalid) {
+    arg.cancled = true;
+  }
+});
+```
 
 # Contribute
 
