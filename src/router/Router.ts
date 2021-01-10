@@ -2,6 +2,10 @@ export interface IRouterSlot {
   updateSlot(route: Route): void;
 }
 
+export declare class RouterLink {
+  $$prop_def: any;
+}
+
 export class Route {
   public component: any;
   public path: string;
