@@ -5,3 +5,9 @@ test/
 rollup.config.js
 tsconfig.json
 tslint.json
+tslint-to-eslint-config.log
+public/build
+public/favicon.png          
+public/global.css           
+public/index.html  
+.eslintrc.js
