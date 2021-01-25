@@ -65,7 +65,7 @@ let options = [
 		],
 	},
 	production && {
-		// To use with svelte components
+		// To use with svelte components + module
 		input: 'src/router/Router.ts',
 		output: [
 			{
@@ -102,15 +102,14 @@ let options = [
 			copy({
 				targets: [
 					{ src: 'src/router/index.js', dest: 'public/npm' },
-					{ src: 'src/router/Router.ts', dest: 'public/npm' },
 					{ src: 'src/router/RouterLink.svelte', dest: 'public/npm' },
 					{ src: 'src/router/RouterSlot.svelte', dest: 'public/npm' },
-					{ src: 'package.json', dest: 'public/npm' }
 				]
 			})
 		],
 	},
 	{
+		// for development svelte-micro-router + app.svelte sample code
 		input: 'src/main.ts',
 		output: [
 			{
