@@ -72,7 +72,7 @@ let options = [
 				sourcemap: false,
 				format: 'es',
 				name: 'app',
-				file: 'public/npm/router.js'
+				file: 'public/npm/Router.js'
 			}
 		],
 		plugins: [
