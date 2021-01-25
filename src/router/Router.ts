@@ -57,7 +57,7 @@ export class Route {
 
 export class Router {
   public routes: Route[] = [];
-  private slots: IRouterSlot[] = [];
+  private slots: { [key: string]: (route: Route) => void } = {};
   private events: any = {};
   public currentRoute: Route;
 
@@ -151,26 +151,29 @@ export class Router {
       }
     });
   }
+
   /**
    * Internal: RouterSlot needs to inform the router that he will be informed about any route changes.
    *
-   * @param  {any} slotObj
+   * @param  {string} id
+   * @param  {(route:Route)=>void} callback
    * @returns void
    */
-  public registerSlot(slotObj: any): void {
-    this.slots.push(slotObj as IRouterSlot);
-    const route = this.currentRoute || this.getCurrentRoute();
-    slotObj.updateSlot(route);
+  public registerSlot(id: string, callback: (route: Route) => void): void {
+    this.slots[id] = callback;
+    const r = this.currentRoute || this.getCurrentRoute();
+    callback(r);
   }
 
   /**
    * Internal: RouterSlots needs to unregister from the router that he will not informed about any route changes.
    *
-   * @param  {any} slotObj
+   * @param  {string} id
    * @returns void
    */
-  public unregisterSlot(slotObj: any): void {
-    this.slots = this.slots.filter(x => x !== slotObj);
+  public unregisterSlot(id: string): void {
+    delete this.slots[id];
+    this.slots = this.slots;
   }
 
   /**
@@ -203,7 +206,7 @@ export class Router {
   }
 
   private informSlots(route: Route): void {
-    this.slots.forEach(s => s.updateSlot(route));
+    Object.values(this.slots).forEach(cb => cb(route));
   }
 
   private getCurrentUrl(): string {

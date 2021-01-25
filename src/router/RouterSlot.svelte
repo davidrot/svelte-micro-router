@@ -2,11 +2,13 @@
     import { RouterInstance, Route } from './Router';
     import { onMount, onDestroy } from 'svelte';
 
+    const key = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5);
+
     onMount(() => {
-        RouterInstance.registerSlot(eval("$$self"));
+        RouterInstance.registerSlot(key, route => updateSlot(route));
     });
     onDestroy(() => {
-        RouterInstance.unregisterSlot(eval("$$self"));
+        RouterInstance.unregisterSlot(key, route => updateSlot(route));
 	});
 
     // Workaround when two following routes are using the same component.
