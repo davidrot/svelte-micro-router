@@ -6,19 +6,28 @@ export declare class RouterLink {
   $$prop_def: any;
 }
 
+export declare class EventListenerArgs {
+  public cancled: boolean;
+  public source: Route;
+  public destination: Route;
+}
+
 export class Route {
   public component: any;
   public path: string;
   public metaInformation: any;
   private urlParts: string[];
+  public asyncComponent: () => Promise<any>;
 
   /**
    * @param  {string} path
    * @param  {any} component
+   * @param  {()=>Promise<any>=null} asyncComponent
    * @param  {any} metaInformation (will be resolved when getParamsObj)
    */
-  constructor(path: string, component: any, metaInformation: any = null) {
+  constructor(path: string, component: any, asyncComponent: () => Promise<any> = null, metaInformation: any = null) {
     this.component = component;
+    this.asyncComponent = asyncComponent;
     this.path = path;
     this.metaInformation = metaInformation;
     this.urlParts = this.trimSlashes(path).split('/');
@@ -72,10 +81,10 @@ export class Router {
    * called whenever the specified event is delivered to the target.
    *
    * @param  {string} name
-   * @param  {any} handler
+   * @param  {(args: EventListenerArgs) => void} handler
    * @returns void
    */
-  public addEventListener(name: string, handler: any): void {
+  public addEventListener(name: string, handler: (args: EventListenerArgs) => void): void {
     if (this.events.hasOwnProperty(name)) {
       this.events[name].push(handler);
     } else {
@@ -89,10 +98,10 @@ export class Router {
    * EventTarget.addEventListener().
    *
    * @param  {string} name
-   * @param  {any} handler
+   * @param  {(args: EventListenerArgs) => void} handler
    * @returns void
    */
-  public removeEventListener(name: string, handler: any): void {
+  public removeEventListener(name: string, handler: (args: EventListenerArgs) => void): void {
     if (!this.events.hasOwnProperty(name)) {
       return;
     }
@@ -134,6 +143,9 @@ export class Router {
     // this is the first possible event to do this
     if (this.currentRoute == null) {
       this.currentRoute = this.getRouteByPath(this.getCurrentUrl());
+      if (this.currentRoute) {
+        this.navigateInternal(this.currentRoute, false);
+      }
     }
   }
 
@@ -162,7 +174,9 @@ export class Router {
   public registerSlot(id: string, callback: (route: Route) => void): void {
     this.slots[id] = callback;
     const r = this.currentRoute || this.getCurrentRoute();
-    callback(r);
+    if (r) {
+      callback(r);
+    }
   }
 
   /**
@@ -183,17 +197,25 @@ export class Router {
    * @param  {boolean=true} pushState
    * @returns void
    */
-  public navigate(url: string, pushState: boolean = true): void {
+  public async navigate(url: string, pushState: boolean = true): Promise<void> {
     const destinationRoute = this.getRouteByPath(url);
-    const arg = { cancled: false, source: this.currentRoute, destination: destinationRoute };
+    if (!destinationRoute) return;
+    await this.navigateInternal(destinationRoute, pushState);
+  }
+
+  private async navigateInternal(destinationRoute: Route, pushState: boolean = true): Promise<void> {
+    const arg = { cancled: false, source: this.currentRoute, destination: destinationRoute } as EventListenerArgs;
     this.fireEvent('url-changing', [arg])
 
     if (!arg.cancled) {
       this.currentRoute = destinationRoute;
-      this.informSlots(this.currentRoute);
       if (pushState) {
-        this.pushState(url);
+        this.pushState(this.getCurrentUrl());
       }
+      if (!this.currentRoute?.component && this.currentRoute?.asyncComponent) {
+        this.currentRoute.component = (await this.currentRoute.asyncComponent()).default;
+      }
+      this.informSlots(this.currentRoute);
     }
   }
 

@@ -2,10 +2,14 @@ Svelte-micro-router does what it says on the tin. It is very micro, please keep 
 
 # Features
 
-- Small size / Micro
+- Small size / Micro 
+Uncompressed: 8147 bytes
+Gzip: 3223 bytes
+Brotli: 2875 bytes
 - Easy configuration (no sub route objects)
 - Typescript
 - Support for multiple router slots
+- Async routes for lazy loading modules
 
 # Installation 
 
@@ -27,26 +31,29 @@ import UserComponent from "./Components/User.svelte";
 RouterInstance.registerRoutes([
     new Route ('/', HomeComponent),
     new Route ('/about/', AboutComponent),
+    new Route('/about-async/', null, () => new Promise(resolve => 
+        setTimeout(() => resolve(AboutComponent), 2000))),
     new Route ('/user/:userId/', UserComponent),
-    new Route ('/user/:userId/:name/', UserComponent, { metaInformation: 'something' }),
+    new Route ('/user/:userId/:name/', UserComponent, null, { metaInformation: 'something' }),
 ]);
 ```
 
 ```html
 // App.svelte
 <script lang="ts">
-	import {RouterLink, RouterSlot} from "svelte-micro-router";
+    import {RouterLink, RouterSlot} from "svelte-micro-router";
 </script>
 
 <main>
-	<nav">
-		<RouterLink to="/">Home</RouterLink>
-		<RouterLink to="/about/">About</RouterLink>
-		<RouterLink to="/user/1/">User 1</RouterLink>
-		<RouterLink to="/user/2/test/">User 2</RouterLink>
-	</nav>
+    <nav">
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about/">About</RouterLink>
+        <RouterLink to="/about-async/">About-Async</RouterLink>
+        <RouterLink to="/user/1/">User 1</RouterLink>
+        <RouterLink to="/user/2/test/">User 2</RouterLink>
+    </nav>
 
-	<RouterSlot></RouterSlot>
+    <RouterSlot></RouterSlot>
 </main>
 ```
 
@@ -93,19 +100,19 @@ public getCurrentParamsObj(): Record<string, string>
 * The method addEventListener() sets up a function that will be called whenever the
 * specified event is delivered to the target.
 * @param  {string} name
-* @param  {any} handler
+* @param  {(args: EventListenerArgs) => void} handler
 * @returns void
 */
-public addEventListener(name: string, handler: any): void
+public addEventListener(name: string, handler: (args: EventListenerArgs) => void): void
 
 /**
 * The EventTarget.removeEventListener() method removes from the EventTarget an event
 * listener previously registered with EventTarget.addEventListener().
 * @param  {string} name
-* @param  {any} handler
+* @param  {(args: EventListenerArgs) => void} handler
 * @returns void
 */
-public removeEventListener(name: string, handler: any): void
+public removeEventListener(name: string, handler: (args: EventListenerArgs) => void): void
 ```
 
 # Events

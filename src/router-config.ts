@@ -7,5 +7,10 @@ RouterInstance.registerRoutes([
     new Route ('/', HomeComponent),
     new Route ('/about/', AboutComponent),
     new Route ('/user/:userId/', UserComponent),
-    new Route ('/user/:userId/:name/', UserComponent),
+    new Route('/user/:userId/:name/', UserComponent),
+    new Route('/about-async/', null, () => new Promise(resolve => {
+        setTimeout(() => {
+            resolve(AboutComponent);
+        }, 2000);
+    }))
 ]);

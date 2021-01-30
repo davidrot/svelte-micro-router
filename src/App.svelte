@@ -7,6 +7,7 @@
 	<div class="navigation">
 		<RouterLink to="/">Home</RouterLink>
 		<RouterLink to="/about/">About</RouterLink>
+		<RouterLink to="/about-async/">About-Async</RouterLink>
 		<RouterLink to="/user/1/">User 1</RouterLink>
 		<RouterLink to="/user/2/test/">User 2</RouterLink>
 	</div>

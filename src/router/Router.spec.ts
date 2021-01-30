@@ -8,7 +8,7 @@ const getRoute = (url: string, component: any = null) => {
 
 test('Route', g => {
     g.test('should handle path as string', t => {
-        const route = new Route('/user/:id/', 1, { a: 1 });
+        const route = new Route('/user/:id/', 1, null, { a: 1 });
 
         t.equal(route.component, 1);
         t.equal(route.path, '/user/:id/');
@@ -28,9 +28,9 @@ test('getParams', g => {
         });
 
         gg.test('should return default param if no params exists', t => {
-            const result = sut.getCurrentParams('/user', new Route('/user/', 1, {edit:true}));
+            const result = sut.getCurrentParams('/user', new Route('/user/', 1, null, { edit:true }));
 
-            t.equal(result as any, {edit: true});
+            t.equal(result as any, { edit: true });
         });
 
         gg.test('should return object if route params exists', t => {
@@ -40,7 +40,7 @@ test('getParams', g => {
         });
 
         gg.test('should return default object combined with route params', t => {
-            const result = sut.getCurrentParams('/user/1/', new Route('/user/:id/', 1, { edit: true }));
+            const result = sut.getCurrentParams('/user/1/', new Route('/user/:id/', 1, null, { edit: true }));
 
             t.equal(result as any, { id: '1', edit: true });
         });
@@ -149,5 +149,106 @@ test('unregisterRoutes', g => {
         router.unregisterRoutes([new Route('/test', 102)]);
 
         t.equal(router.routes.length, 1);
+    });
+});
+
+test('navigate', g => {
+    g.test('should not crash when route is not found', async t => {
+        const router = new Router();
+
+        await router.navigate('/notfound/');
+
+        t.truthy(true);
+    });
+
+    g.test('should not fire event when route is not found', async t => {
+        const router = new Router();
+        let eventCalled = false;
+        router.addEventListener('url-changing', () => eventCalled = true);
+
+        await router.navigate('/notfound/');
+
+        t.falsy(eventCalled);
+    });
+
+    g.test('should fire event when route is changed', async t => {
+        const router = new Router();
+        router.registerRoutes([new Route('/user/', 102)]);
+        let eventCalled = false;
+        router.addEventListener('url-changing', () => eventCalled = true);
+
+        await router.navigate('/user/', false);
+
+        t.truthy(eventCalled);
+    });
+
+    g.test('should not continue when event is cancled', async t => {
+        const router = new Router();
+        router.registerRoutes([new Route('/user/', 102)]);
+        router.addEventListener('url-changing', e => e.cancled = true);
+        let informedSlot = false;
+        router.registerSlot('id', () => informedSlot = true);
+        // informedSlot = false; // slot callback will be called sta
+
+        await router.navigate('/user/', true);
+
+        t.falsy(informedSlot);
+    });
+
+    // g.test('should push state on navigation', t => {
+    //     can not tested with jsdom?
+    // });
+
+    g.test('should inform slots on navigation', async t => {
+        const router = new Router();
+        router.registerRoutes([new Route('/user/', 102)]);
+        let informedSlot = false;
+        router.registerSlot('id', () => informedSlot = true);
+
+        await router.navigate('/user/', false);
+
+        t.truthy(informedSlot);
+    });
+
+    g.test('should resolve promise on navigation', async t => {
+        const router = new Router();
+        const promise = new Promise<any>(resolve => {
+            resolve({ default: { 1: 1 }}); // default is required bc es-
+        });
+        const route = new Route('/user/', null, () => promise);
+        router.registerRoutes([route]);
+
+        await router.navigate('/user/', false);
+
+        t.eq(route.component, { 1: 1 });
+    });
+
+    g.test('should resolve promise on navigation', async t => {
+        const router = new Router();
+        const promise = new Promise<any>(resolve => {
+            resolve({ default: { 1: 1 }}); // default is required bc es-modules
+        });
+        let promiseCallCounter = 0;
+        const route = new Route('/user/', null, () => {
+            promiseCallCounter++;
+            return promise;
+        });
+        router.registerRoutes([route]);
+
+        await router.navigate('/user/', false);
+        await router.navigate('/user/', false);
+        await router.navigate('/user/', false);
+
+        t.eq(route.component, { 1: 1 });
+        t.eq(promiseCallCounter, 1);
+    });
+
+    g.test('should not crash when no slot is available', async t => {
+        const router = new Router();
+        router.registerRoutes([new Route('/user/', 102)]);
+
+        await router.navigate('/user/', false);
+
+        t.truthy(true);
     });
 });
