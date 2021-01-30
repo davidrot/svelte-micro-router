@@ -142,9 +142,10 @@ export class Router {
     // not possible in constructor, because user hasnt registered any routes to it
     // this is the first possible event to do this
     if (this.currentRoute == null) {
-      this.currentRoute = this.getRouteByPath(this.getCurrentUrl());
+      const url = this.getCurrentUrl();
+      this.currentRoute = this.getRouteByPath(url);
       if (this.currentRoute) {
-        this.navigateInternal(this.currentRoute, false);
+        this.navigateInternal(url, this.currentRoute, false);
       }
     }
   }
@@ -200,17 +201,20 @@ export class Router {
   public async navigate(url: string, pushState: boolean = true): Promise<void> {
     const destinationRoute = this.getRouteByPath(url);
     if (!destinationRoute) return;
-    await this.navigateInternal(destinationRoute, pushState);
+    await this.navigateInternal(url, destinationRoute, pushState);
   }
 
-  private async navigateInternal(destinationRoute: Route, pushState: boolean = true): Promise<void> {
+  private async navigateInternal(url: string, destinationRoute: Route, pushState: boolean = true): Promise<void> {
+    if (!destinationRoute) {
+      destinationRoute = this.getRouteByPath(url);
+    }
     const arg = { cancled: false, source: this.currentRoute, destination: destinationRoute } as EventListenerArgs;
     this.fireEvent('url-changing', [arg])
 
     if (!arg.cancled) {
       this.currentRoute = destinationRoute;
       if (pushState) {
-        this.pushState(this.getCurrentUrl());
+        this.pushState(url);
       }
       if (!this.currentRoute?.component && this.currentRoute?.asyncComponent) {
         this.currentRoute.component = (await this.currentRoute.asyncComponent()).default;
