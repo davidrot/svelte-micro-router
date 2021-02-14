@@ -11,27 +11,20 @@
         RouterInstance.unregisterSlot(key, route => updateSlot(route));
 	});
 
-    // Workaround when two following routes are using the same component.
-    let slotContent1: Route;
-    let slotContent2: Route;
+    let currentComponent: any;
     export function updateSlot(route: Route): void {
-        if (slotContent1 == null) {
-            slotContent1 = route;
-            slotContent2 = null;
-        } else {
-            slotContent2 = route;
-            slotContent1 = null;
+        if (route?.component) {
+            // Workaround when two following routes are using the same component.
+            currentComponent = function w() {
+                return new route.component(...arguments);
+            }
         }
     }
 </script>
 
 <div>
-    {#if slotContent1 != null}
-    <svelte:component this={slotContent1.component}/>
-    {/if}
-
-    {#if slotContent2 != null}
-    <svelte:component this={slotContent2.component}/>
+    {#if currentComponent != null}
+    <svelte:component this={currentComponent}/>
     {/if}
 </div>
 
