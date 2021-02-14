@@ -216,7 +216,7 @@ export class Router {
         this.pushState(url);
       }
       if (!this.currentRoute?.component && this.currentRoute?.asyncComponent) {
-        this.currentRoute.component = (await this.currentRoute.asyncComponent()).default;
+        this.currentRoute.component = (await this.currentRoute.asyncComponent());
       }
       this.informSlots(this.currentRoute);
     }
