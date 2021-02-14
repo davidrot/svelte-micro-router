@@ -11,6 +11,6 @@ RouterInstance.registerRoutes([
     new Route('/about-async/', null, () => new Promise(resolve => {
         setTimeout(() => {
             resolve(AboutComponent);
-        }, 2000);
+        }, 1000);
     }))
 ]);
