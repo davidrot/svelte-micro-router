@@ -153,22 +153,15 @@ test('unregisterRoutes', g => {
 });
 
 test('navigate', g => {
-    g.test('should not crash when route is not found', async t => {
+    g.test('should fire event with empty route when route is not found', async t => {
         const router = new Router();
+        let eventArg;
+        router.addEventListener('url-changing', arg => eventArg = arg);
 
         await router.navigate('/notfound/');
 
-        t.truthy(true);
-    });
-
-    g.test('should not fire event when route is not found', async t => {
-        const router = new Router();
-        let eventCalled = false;
-        router.addEventListener('url-changing', () => eventCalled = true);
-
-        await router.navigate('/notfound/');
-
-        t.falsy(eventCalled);
+        t.notEqual(eventArg, undefined);
+        t.equal(eventArg.destination, undefined);
     });
 
     g.test('should fire event when route is changed', async t => {

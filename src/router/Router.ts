@@ -200,7 +200,6 @@ export class Router {
    */
   public async navigate(url: string, pushState: boolean = true): Promise<void> {
     const destinationRoute = this.getRouteByPath(url);
-    if (!destinationRoute) return;
     await this.navigateInternal(url, destinationRoute, pushState);
   }
 
