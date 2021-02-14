@@ -198,12 +198,12 @@ export class Router {
    * @param  {boolean=true} pushState
    * @returns void
    */
-  public async navigate(url: string, pushState: boolean = true): Promise<void> {
+  public async navigate(url: string, pushState: boolean = true, informSlots: boolean = true): Promise<void> {
     const destinationRoute = this.getRouteByPath(url);
-    await this.navigateInternal(url, destinationRoute, pushState);
+    await this.navigateInternal(url, destinationRoute, pushState, informSlots);
   }
 
-  private async navigateInternal(url: string, destinationRoute: Route, pushState: boolean = true): Promise<void> {
+  private async navigateInternal(url: string, destinationRoute: Route, pushState: boolean = true, informSlots: boolean = true): Promise<void> {
     if (!destinationRoute) {
       destinationRoute = this.getRouteByPath(url);
     }
@@ -215,10 +215,12 @@ export class Router {
       if (pushState) {
         this.pushState(url);
       }
-      if (!this.currentRoute?.component && this.currentRoute?.asyncComponent) {
-        this.currentRoute.component = (await this.currentRoute.asyncComponent());
+      if (informSlots) {
+        if (!this.currentRoute?.component && this.currentRoute?.asyncComponent) {
+          this.currentRoute.component = (await this.currentRoute.asyncComponent());
+        }
+        this.informSlots(this.currentRoute);
       }
-      this.informSlots(this.currentRoute);
     }
   }
 

@@ -158,7 +158,11 @@ test('navigate', g => {
         let eventArg;
         router.addEventListener('url-changing', arg => eventArg = arg);
 
-        await router.navigate('/notfound/');
+        try {
+            await router.navigate('/notfound/');
+        } catch {
+            // not used
+        }
 
         t.notEqual(eventArg, undefined);
         t.equal(eventArg.destination, undefined);
@@ -206,7 +210,7 @@ test('navigate', g => {
     g.test('should resolve promise on navigation', async t => {
         const router = new Router();
         const promise = new Promise<any>(resolve => {
-            resolve({ default: { 1: 1 }}); // default is required bc es-
+            resolve({ 1: 1 });
         });
         const route = new Route('/user/', null, () => promise);
         router.registerRoutes([route]);
@@ -216,10 +220,10 @@ test('navigate', g => {
         t.eq(route.component, { 1: 1 });
     });
 
-    g.test('should resolve promise on navigation', async t => {
+    g.test('should resolve promise only once on navigation', async t => {
         const router = new Router();
         const promise = new Promise<any>(resolve => {
-            resolve({ default: { 1: 1 }}); // default is required bc es-modules
+            resolve({ 1: 1 });
         });
         let promiseCallCounter = 0;
         const route = new Route('/user/', null, () => {
