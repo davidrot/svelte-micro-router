@@ -18,6 +18,8 @@
             currentComponent = function w() {
                 return new route.component(...arguments);
             }
+        } else {
+            currentComponent = null;
         }
     }
 </script>
