@@ -1,6 +1,6 @@
 {
   "name": "svelte-micro-router",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Svelte-micro-router does what it says on the tin. It is very micro, please keep this in your mind if you are missing some features.",
   "main": "public/npm/bundle.js",
   "svelte": "public/npm/index.js",
