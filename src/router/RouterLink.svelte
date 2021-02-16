@@ -8,7 +8,9 @@
     }
 </script>
 
-<a href="/#{to}" on:click|preventDefault={navigate} ><slot></slot></a>
+<template>
+    <a href="/#{to}" on:click|preventDefault={navigate} ><slot></slot></a>
+</template>
 
 <style>
 </style>

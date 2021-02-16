@@ -22,11 +22,12 @@
     }
 </script>
 
-<div>
+<template>
     {#if currentComponent != null}
     <svelte:component this={currentComponent}/>
     {/if}
-</div>
+</template>
+
 
 <style>
 </style>
