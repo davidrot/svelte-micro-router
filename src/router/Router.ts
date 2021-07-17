@@ -237,7 +237,7 @@ export class Router {
   }
 
   private getCurrentUrl(): string {
-    return location.hash.slice(1).toLowerCase() || '/';
+    return location.hash.slice(1) || '/';
   }
 
   private getCurrentRoute(): Route {
