@@ -57,8 +57,5 @@
     "tslib": "^2.0.0",
     "typescript": "^3.9.7",
     "zora": "^4.0.0"
-  },
-  "dependencies": {
-    "tslint-to-eslint-config": "^1.5.0"
   }
 }
