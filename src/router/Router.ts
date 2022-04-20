@@ -75,9 +75,12 @@ export class Router {
   private events: any = {};
   public currentRoute: Route;
 
-  constructor() {
+  constructor(private _history: any = null) {
     if (typeof window !== "undefined") {
       window.addEventListener("popstate", () => this.popState());
+    }
+    if (!_history) {
+      this._history = window.history;
     }
   }
 
@@ -153,11 +156,7 @@ export class Router {
     // not possible in constructor, because user hasnt registered any routes to it
     // this is the first possible event to do this
     if (this.currentRoute == null) {
-      const url = this.getCurrentUrl();
-      this.currentRoute = this.getRouteByPath(url);
-      if (this.currentRoute) {
-        this.navigateInternal(url, this.currentRoute, false);
-      }
+      this.navigate(this.getCurrentUrl());
     }
   }
 
@@ -257,7 +256,7 @@ export class Router {
   }
 
   private pushState(url: string): void {
-    history.pushState(
+    this._history.pushState(
       { key: window.performance.now().toFixed(3) },
       "",
       "/#" + url

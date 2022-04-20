@@ -27,7 +27,7 @@
     "validate": "npm run validate:svelte && npm run validate:ts",
     "validate:svelte": "svelte-check",
     "validate:ts": "eslint -c .eslintrc.js --ext .ts ./src",
-    "test": "./test/test.sh",
+    "test": "sh ./test/test.sh",
     "test:watch": "tsc-watch -p ./test/tsconfig.spec.json --onSuccess 'npm run test'"
   },
   "devDependencies": {

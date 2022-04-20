@@ -5,6 +5,7 @@ const getRoute = (url: string, component: any = null) => {
   const returnValue = new Route(url, component);
   return returnValue;
 };
+const fakeHistory = { pushState: () => null };
 
 test("Route", (g) => {
   g.test("should handle path as string", (t) => {
@@ -54,7 +55,7 @@ test("getParams", (g) => {
 
 test("getRouteByPath", (g) => {
   const getRouterSut = () => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     router.registerRoutes([
       new Route("/user/", 1),
       new Route("/user/:id/", 1),
@@ -107,7 +108,7 @@ test("getRouteByPath", (g) => {
 
 test("registerRoutes", (g) => {
   g.test("should add routes to list", (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
 
     router.registerRoutes([new Route("/user/", 101)]);
 
@@ -116,7 +117,7 @@ test("registerRoutes", (g) => {
   });
 
   g.test("should append routes to list", (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
 
     router.registerRoutes([new Route("/user/", 101)]);
     router.registerRoutes([new Route("/invoices/", 102)]);
@@ -127,7 +128,7 @@ test("registerRoutes", (g) => {
   });
 
   g.test("should set currentRoute property", (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     location.hash = "/user/1/";
 
     router.registerRoutes([new Route("/user/:id/", 102)]);
@@ -138,7 +139,7 @@ test("registerRoutes", (g) => {
 
 test("unregisterRoutes", (g) => {
   g.test("should remove routes from list", (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     const route = new Route("/", 101);
     router.registerRoutes([route]);
     t.equal(router.routes.length, 1);
@@ -149,7 +150,7 @@ test("unregisterRoutes", (g) => {
   });
 
   g.test("should not crash if route is not found in list", (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     router.registerRoutes([new Route("/", 101)]);
     t.equal(router.routes.length, 1);
 
@@ -163,15 +164,11 @@ test("navigate", (g) => {
   g.test(
     "should fire event with empty route when route is not found",
     async (t) => {
-      const router = new Router();
+      const router = new Router(fakeHistory);
       let eventArg;
       router.addEventListener("url-changing", (arg) => (eventArg = arg));
 
-      try {
-        await router.navigate("/notfound/");
-      } catch {
-        // not used
-      }
+      await router.navigate("/notfound/");
 
       t.notEqual(eventArg, undefined);
       t.equal(eventArg.destination, undefined);
@@ -179,7 +176,7 @@ test("navigate", (g) => {
   );
 
   g.test("should fire event when route is changed", async (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     router.registerRoutes([new Route("/user/", 102)]);
     let eventCalled = false;
     router.addEventListener("url-changing", () => (eventCalled = true));
@@ -190,7 +187,7 @@ test("navigate", (g) => {
   });
 
   g.test("should not continue when event is cancled", async (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     router.registerRoutes([new Route("/user/", 102)]);
     router.addEventListener("url-changing", (e) => (e.cancled = true));
     let informedSlot = false;
@@ -207,7 +204,7 @@ test("navigate", (g) => {
   // });
 
   g.test("should inform slots on navigation", async (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     router.registerRoutes([new Route("/user/", 102)]);
     let informedSlot = false;
     router.registerSlot("id", () => (informedSlot = true));
@@ -218,7 +215,7 @@ test("navigate", (g) => {
   });
 
   g.test("should resolve promise on navigation", async (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     const promise = new Promise<any>((resolve) => {
       resolve({ 1: 1 });
     });
@@ -231,7 +228,7 @@ test("navigate", (g) => {
   });
 
   g.test("should resolve promise only once on navigation", async (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     const promise = new Promise<any>((resolve) => {
       resolve({ 1: 1 });
     });
@@ -251,7 +248,7 @@ test("navigate", (g) => {
   });
 
   g.test("should not crash when no slot is available", async (t) => {
-    const router = new Router();
+    const router = new Router(fakeHistory);
     router.registerRoutes([new Route("/user/", 102)]);
 
     await router.navigate("/user/", false);
