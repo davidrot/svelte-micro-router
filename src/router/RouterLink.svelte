@@ -2,7 +2,7 @@
     import { RouterInstance} from './Router';
 
     export let to: any;
-    let clazz: string;
+    let clazz: string = null;
     export { clazz as class };
 
     export function navigate(): void {
