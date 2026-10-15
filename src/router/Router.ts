@@ -1,9 +1,16 @@
+import type { SvelteComponentTyped } from 'svelte';
+
 export interface IRouterSlot {
   updateSlot(route: Route): void;
 }
 
-export declare class RouterLink {
-  $$prop_def: any;
+// Nur Typen fuer die .svelte-Komponenten (index.js exportiert sie) - so akzeptiert svelte-check sie als Komponenten.
+export declare class RouterLink extends SvelteComponentTyped<{ to: any; class?: string }, Record<string, never>, { default: Record<string, never> }> {
+  navigate(): void;
+}
+
+export declare class RouterSlot extends SvelteComponentTyped<Record<string, never>> implements IRouterSlot {
+  updateSlot(route: Route): void;
 }
 
 export declare class EventListenerArgs {
